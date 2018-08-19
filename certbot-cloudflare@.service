@@ -2,7 +2,7 @@
 Description = Renew certs with systemd-timer for %i
 
 [Service]
-WorkingDirectory=/usr/local/lib/certbot-cloudflare-dns
+WorkingDirectory=/usr/local/lib/certbot-cloudflare-systemd
 EnvironmentFile=/usr/local/lib/certbot-cloudflare-systemd/.env
 ExecStart = /bin/sh /usr/local/lib/certbot-cloudflare-systemd/getcert.sh %i
 Type = simple
