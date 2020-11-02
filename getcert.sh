@@ -1,51 +1,34 @@
 #!/bin/sh
 
-# Argument check
 if [ $# -ne 1 ]; then
     echo "Argument error" 1>&2
     exit 1
 fi
 
-IMAGE_NAME_WITH_VERSION=$IMAGE_NAME:$CERTBOT_VERSION
+echo "$CLOUDFLARE_CREDENTIALS_CONFIG" > ./cloudflare-credentials.ini
 
-# Is docker image exist?
-docker inspect --type=image $IMAGE_NAME_WITH_VERSION > /dev/null 2>&1
-if [ 0 -ne $? ]; then
-	docker pull $IMAGE_NAME_WITH_VERSION
-fi
-
-if [ -e $(pwd)/config/live/$1 ]; then
-    docker run \
-	--mount type=bind,src=$(pwd)/config,dst=/workspace/config \
-        --mount type=bind,src=$(pwd)/logs,dst=/workspace/logs \
-        --mount type=bind,src=$(pwd)/cloudflare-credentials.ini,dst=/workspace/cloudflare-credentials.ini \
-        -i --rm \
-        --user "$(id --user):$(id --group)" \
-        $IMAGE_NAME \
-            --config-dir /workspace/config \
-            --logs-dir /workspace/logs \
-            --work-dir /tmp \
-            --non-interactive \
-            --agree-tos --email $CERTBOT_EMAIL\
-            renew \
-	        --dns-cloudflare \
-                --dns-cloudflare-credentials /workspace/cloudflare-credentials.ini
+if [ -e "./config/live/$1" ]; then
+    certbot \
+        --agree-tos \
+        --config-dir ./config \
+        --dns-cloudflare \
+        --dns-cloudflare-credentials ./cloudflare-credentials.ini \
+        --email "$CERTBOT_EMAIL" \
+        --logs-dir ./logs \
+        --non-interactive \
+        --work-dir ./ \
+        renew
 else
-    docker run \
-	--mount type=bind,src=$(pwd)/config,dst=/workspace/config \
-        --mount type=bind,src=$(pwd)/logs,dst=/workspace/logs \
-        --mount type=bind,src=$(pwd)/cloudflare-credentials.ini,dst=/workspace/cloudflare-credentials.ini \
-        -i --rm \
-        --user "$(id --user):$(id --group)" \
-        $IMAGE_NAME \
-            --config-dir /workspace/config \
-            --logs-dir /workspace/logs \
-            --work-dir /tmp \
-            --non-interactive \
-            --agree-tos --email $CERTBOT_EMAIL\
-            certonly \
-                --dns-cloudflare \
-                --dns-cloudflare-credentials /workspace/cloudflare-credentials.ini \
-		--domain $1 \
-                --domain *.$1
+    certbot \
+        --agree-tos \
+        --config-dir ./config \
+        --dns-cloudflare \
+        --dns-cloudflare-credentials ./cloudflare-credentials.ini \
+        --email "$CERTBOT_EMAIL"\
+        --logs-dir ./logs \
+        --non-interactive \
+        --work-dir ./ \
+        certonly \
+            --domain "$1" \
+            --domain "*.$1"
 fi

@@ -1,3 +1,4 @@
 .env
-cloudflare-credentials.ini
 /config
+/logs
+!/logs/.gitignore

@@ -2,10 +2,23 @@
 Description = Renew certs with systemd-timer for %i
 
 [Service]
-WorkingDirectory=/usr/local/lib/certbot-cloudflare-systemd
-EnvironmentFile=/usr/local/lib/certbot-cloudflare-systemd/.env
-ExecStart = /bin/sh /usr/local/lib/certbot-cloudflare-systemd/getcert.sh %i
-Type = simple
+ExecStart=/usr/bin/podman run \
+    --env-file ./env \
+    --mount type=bind,src=./config,dst=/workspace/config \
+    --mount type=bind,src=./logs,dst=/workspace/logs \
+    --name=%N \
+    --rm \
+    --user "1000:1000" \
+    -i \
+    certbot-cloudflare-systemd \
+    %i
+ExecStartPre=-/usr/bin/podman kill %N
+ExecStartPre=-/usr/bin/podman rm %N
+ExecStartPre=/usr/bin/podman build -t certbot-cloudflare-systemd .
+KillMode=none
+TimeoutStartSec=0
+Type=simple
+WorkingDirectory=%h/services/certbot-cloudflare-systemd
 
 [Install]
 WantedBy = multi-user.target
