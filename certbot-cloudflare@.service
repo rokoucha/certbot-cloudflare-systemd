@@ -3,17 +3,17 @@ Description = Renew certs with systemd-timer for %i
 
 [Service]
 ExecStart=/usr/bin/podman run \
-    --env-file ./env \
+    --env-file .env \
     --mount type=bind,src=./config,dst=/workspace/config \
     --mount type=bind,src=./logs,dst=/workspace/logs \
-    --name=%N \
+    --name=%p_%i \
     --rm \
     --user "1000:1000" \
     -i \
     certbot-cloudflare-systemd \
     %i
-ExecStartPre=-/usr/bin/podman kill %N
-ExecStartPre=-/usr/bin/podman rm %N
+ExecStartPre=-/usr/bin/podman kill %p_%i
+ExecStartPre=-/usr/bin/podman rm %p_%i
 ExecStartPre=/usr/bin/podman build -t certbot-cloudflare-systemd .
 KillMode=none
 TimeoutStartSec=0

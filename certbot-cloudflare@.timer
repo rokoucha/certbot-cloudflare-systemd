@@ -4,7 +4,6 @@ Description=Renew certs with systemd-timer
 [Timer]
 OnBootSec=300
 OnUnitActiveSec=3w
-Unit=certbot-cloudflare@%i.service
 
 [Install]
 WantedBy=timers.target
