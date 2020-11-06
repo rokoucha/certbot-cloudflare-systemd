@@ -5,7 +5,7 @@ if [ $# -ne 1 ]; then
     exit 1
 fi
 
-echo "$CLOUDFLARE_CREDENTIALS_CONFIG" > ./cloudflare-credentials.ini
+echo -e "$CLOUDFLARE_CREDENTIALS_CONFIG" > ./cloudflare-credentials.ini
 
 if [ -e "./config/live/$1" ]; then
     certbot \
