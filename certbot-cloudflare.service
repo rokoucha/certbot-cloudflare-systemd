@@ -1,0 +1,31 @@
+[Unit]
+Description = Renew certificates with systemd-timer.
+Wants=network.target
+After=network-online.target
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+Restart=on-failure
+TimeoutStopSec=60
+ExecStartPre=/bin/rm -f %t/container-certbot-cloudflare.pid %t/container-certbot-cloudflare.ctr-id
+ExecStartPre=/usr/bin/podman build -t certbot-cloudflare-systemd .
+ExecStart=/usr/bin/podman run \
+    --cgroups=no-conmon \
+    --cidfile %t/container-certbot-cloudflare.ctr-id \
+    --conmon-pidfile %t/container-certbot-cloudflare.pid \
+    --env-file .env \
+    --name=certbot-cloudflare \
+    --replace \
+    --rm \
+    -i \
+    -v %h/certificates:/opt/certbot/config \
+    -v ./logs:/opt/certbot/logs \
+    certbot-cloudflare-systemd
+ExecStop=/usr/bin/podman stop --ignore --cidfile %t/container-certbot-cloudflare.ctr-id -t 10
+ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/container-certbot-cloudflare.ctr-id
+PIDFile=%t/container-certbot-cloudflare.pid
+Type=simple
+WorkingDirectory=%h/pods/certbot-cloudflare-systemd
+
+[Install]
+WantedBy=multi-user.target default.target

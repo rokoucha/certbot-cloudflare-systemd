@@ -1,13 +1,14 @@
 #!/bin/sh
 
-if [ $# -ne 1 ]; then
-    echo "Argument error" 1>&2
+if [ $# -ne 1 ] && [ ! -e "./config/live" ]; then
+    echo "Certificates not found." 1>&2
     exit 1
 fi
 
 echo -e "$CLOUDFLARE_CREDENTIALS_CONFIG" > ./cloudflare-credentials.ini
+chmod 600 ./cloudflare-credentials.ini
 
-if [ -e "./config/live/$1" ]; then
+if [ $# -ne 1 ] || [ -e "./config/live/$1" ]; then
     certbot \
         --agree-tos \
         --config-dir ./config \
