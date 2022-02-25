@@ -1,4 +1,4 @@
-FROM certbot/dns-cloudflare:v1.13.0
+FROM docker.io/certbot/dns-cloudflare:v1.23.0
 
 VOLUME [ "/opt/certbot/config", "/opt/certbot/logs" ]
 
