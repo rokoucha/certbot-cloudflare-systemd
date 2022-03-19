@@ -7,7 +7,7 @@ RequiresMountsFor=%t/containers
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
-EnvironmentFile=%h/pods/certbot-cloudflare-systemd/.env
+EnvironmentFile=%h/pods/.env/certbot-cloudflare-systemd.env
 Restart=on-failure
 TimeoutStopSec=70
 ExecStartPre=/bin/rm -f %t/%n.ctr-id
