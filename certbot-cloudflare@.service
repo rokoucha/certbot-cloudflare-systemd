@@ -15,7 +15,7 @@ ExecStart=/usr/bin/podman run \
     --cgroups=no-conmon \
     --cidfile=%t/%n.ctr-id \
     --detach \
-    --name=certbot \
+    --name=certbot-%i \
     --replace \
     --rm \
     --sdnotify=conmon \
