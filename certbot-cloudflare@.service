@@ -8,7 +8,6 @@ RequiresMountsFor=%t/containers
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
 EnvironmentFile=%h/pods/.env/certbot-cloudflare-systemd.env
-Restart=on-failure
 TimeoutStopSec=70
 ExecStartPre=/bin/rm -f %t/%n.ctr-id
 ExecStart=/usr/bin/podman run \
@@ -21,7 +20,7 @@ ExecStart=/usr/bin/podman run \
     --sdnotify=conmon \
     --volume %h/certificates:/config \
     --volume %h/pods/.env/certbot-cloudflare-credentials.ini:/certbot-cloudflare-credentials.ini \
-    docker.io/certbot/dns-cloudflare:v1.24.0 \
+    docker.io/certbot/dns-cloudflare:v2.6.0 \
     certonly \
     --non-interactive \
     --keep-until-expiring \
@@ -34,8 +33,8 @@ ExecStart=/usr/bin/podman run \
     --dns-cloudflare-credentials /certbot-cloudflare-credentials.ini \
     -d "%i" \
     -d "*.%i"
-ExecStop=/usr/bin/podman stop --ignore --cidfile=%t/%n.ctr-id
-ExecStopPost=/usr/bin/podman rm -f --ignore --cidfile=%t/%n.ctr-id
+ExecStop=-/usr/bin/podman stop --ignore -t 10 --cidfile=%t/%n.ctr-id
+ExecStopPost=-/usr/bin/podman rm -f --ignore -t 10 --cidfile=%t/%n.ctr-id
 Type=notify
 NotifyAccess=all
 
