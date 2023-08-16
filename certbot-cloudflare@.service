@@ -31,6 +31,7 @@ ExecStart=/usr/bin/podman run \
     --email ${CERTBOT_EMAIL} \
     --dns-cloudflare \
     --dns-cloudflare-credentials /certbot-cloudflare-credentials.ini \
+    --dns-cloudflare-propagation-seconds 30 \
     -d "%i" \
     -d "*.%i"
 ExecStop=-/usr/bin/podman stop --ignore -t 10 --cidfile=%t/%n.ctr-id
