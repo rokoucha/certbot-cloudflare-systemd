@@ -3,7 +3,7 @@ Description=Renew certs with systemd-timer
 
 [Timer]
 OnBootSec=300
-OnUnitActiveSec=3w
+OnUnitActiveSec=2w
 
 [Install]
 WantedBy=timers.target
